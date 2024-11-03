@@ -49,7 +49,7 @@ public class PetDatabase {
         System.out.printf("%d rows in set.\n", count); // Display count of matched rows
     }
 
-    // New method for searching pets by age
+    // New method for searching pets by age (Added for V2)
     public void searchPetsByAge(int searchAge) {
         System.out.println("+----------------------+");
         System.out.println("| ID | NAME      | AGE |");
@@ -57,7 +57,7 @@ public class PetDatabase {
 
         int count = 0;
         for (int i = 0; i < pets.size(); i++) {
-            if (pets.get(i).age == searchAge) { // Match pets with the specified age
+            if (pets.get(i).age == searchAge) { // Match pets with the specified age (Added for V2)
                 System.out.printf("| %2d | %-10s | %3d |\n", i, pets.get(i).name, pets.get(i).age);
                 count++;
             }
@@ -104,12 +104,12 @@ public class PetDatabase {
             } else if (choice == 5) {
                 System.out.print("Enter a name to search: ");
                 String searchName = scanner.nextLine();
-                database.searchPetsByName(searchName); // Call the search by name method
+                database.searchPetsByName(searchName); // Call the search by name method (Added for V2)
             } else if (choice == 6) {
                 System.out.print("Enter age to search: ");
                 int searchAge = scanner.nextInt();
                 scanner.nextLine(); // Consume newline
-                database.searchPetsByAge(searchAge); // Call the search by age method
+                database.searchPetsByAge(searchAge); // Call the search by age method (Added for V2)
             } else if (choice == 7) {
                 System.out.println("Goodbye!");
                 break;
