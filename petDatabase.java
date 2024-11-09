@@ -13,7 +13,7 @@ class Pet {
 
     @Override
     public String toString() {
-        return name + " " + age;
+        return name + " " + age; // For reading pets from the file
     }
 }
 
