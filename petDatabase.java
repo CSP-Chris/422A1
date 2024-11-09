@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -9,15 +10,33 @@ class Pet {
         this.name = name;
         this.age = age;
     }
+
+    @Override
+    public String toString() {
+        return name + " " + age;
+    }
 }
 
 public class PetDatabase {
+    private static final int MAX_PETS = 5;
+    private static final String FILE_NAME = "pets.txt"; // File to save and load pet data
     private ArrayList<Pet> pets = new ArrayList<>();
 
-    public void addPet(String name, int age) {
-        pets.add(new Pet(name, age));
+    public PetDatabase() {
+        loadPetsFromFile(); // Load pets when program starts
     }
 
+    // Adds a new pet to the database
+    public void addPet(String name, int age) {
+        if (pets.size() < MAX_PETS) {
+            pets.add(new Pet(name, age));
+            System.out.println("Pet added.");
+        } else {
+            System.out.println("Error: Database is full.");
+        }
+    }
+
+    // Displays all pets
     public void showPets() {
         System.out.println("+----------------------+");
         System.out.println("| ID | NAME      | AGE |");
@@ -31,6 +50,7 @@ public class PetDatabase {
         System.out.printf("%d rows in set.\n", pets.size());
     }
 
+    // Searches pets by name
     public void searchPetsByName(String searchName) {
         System.out.println("+----------------------+");
         System.out.println("| ID | NAME      | AGE |");
@@ -48,6 +68,7 @@ public class PetDatabase {
         System.out.printf("%d rows in set.\n", count);
     }
 
+    // Searches pets by age
     public void searchPetsByAge(int searchAge) {
         System.out.println("+----------------------+");
         System.out.println("| ID | NAME      | AGE |");
@@ -65,25 +86,55 @@ public class PetDatabase {
         System.out.printf("%d rows in set.\n", count);
     }
 
-    // New method to update a pet's information (V3)
+    // Updates a pet's information
     public void updatePet(int id, String newName, int newAge) {
-        if (id >= 0 && id < pets.size()) { // Check if the ID is valid
+        if (id >= 0 && id < pets.size()) {
             Pet pet = pets.get(id);
             System.out.printf("%s %d changed to %s %d.\n", pet.name, pet.age, newName, newAge);
-            pet.name = newName; // Update name
-            pet.age = newAge; // Update age
+            pet.name = newName;
+            pet.age = newAge;
         } else {
             System.out.println("Invalid pet ID.");
         }
     }
 
-    // New method to remove a pet from the database (V3)
+    // Removes a pet from the database
     public void removePet(int id) {
-        if (id >= 0 && id < pets.size()) { // Check if the ID is valid
-            Pet removedPet = pets.remove(id); // Remove pet by ID
+        if (id >= 0 && id < pets.size()) {
+            Pet removedPet = pets.remove(id);
             System.out.printf("%s %d is removed.\n", removedPet.name, removedPet.age);
         } else {
             System.out.println("Invalid pet ID.");
+        }
+    }
+
+    // Loads pets from pets.txt file at the start
+    private void loadPetsFromFile() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
+            String line;
+            while ((line = reader.readLine()) != null && pets.size() < MAX_PETS) {
+                String[] parts = line.split(" ");
+                if (parts.length == 2) {
+                    String name = parts[0];
+                    int age = Integer.parseInt(parts[1]);
+                    pets.add(new Pet(name, age));
+                }
+            }
+            System.out.println("Pet data loaded from " + FILE_NAME);
+        } catch (IOException | NumberFormatException e) {
+            System.out.println("Error loading pet data: " + e.getMessage());
+        }
+    }
+
+    // Saves pets to pets.txt file before exiting
+    public void savePetsToFile() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_NAME))) {
+            for (Pet pet : pets) {
+                writer.println(pet.toString());
+            }
+            System.out.println("Pet data saved to " + FILE_NAME);
+        } catch (IOException e) {
+            System.out.println("Error saving pet data: " + e.getMessage());
         }
     }
 
@@ -95,8 +146,8 @@ public class PetDatabase {
             System.out.println("\nPet Database Program.");
             System.out.println("1) View all pets");
             System.out.println("2) Add more pets");
-            System.out.println("3) Update an existing pet"); // New option for updating pets (V3)
-            System.out.println("4) Remove an existing pet"); // New option for removing pets (V3)
+            System.out.println("3) Update an existing pet");
+            System.out.println("4) Remove an existing pet");
             System.out.println("5) Search pets by name");
             System.out.println("6) Search pets by age");
             System.out.println("7) Exit program");
@@ -108,7 +159,7 @@ public class PetDatabase {
                 database.showPets();
             } else if (choice == 2) {
                 System.out.println("Add pets (type 'done' to finish):");
-                while (true) {
+                while (database.pets.size() < MAX_PETS) {
                     System.out.print("Enter pet name and age: ");
                     String input = scanner.nextLine();
                     if (input.equalsIgnoreCase("done")) break;
@@ -117,30 +168,31 @@ public class PetDatabase {
                     if (parts.length == 2) {
                         String name = parts[0];
                         int age = Integer.parseInt(parts[1]);
-                        database.addPet(name, age);
-                        System.out.println("Pet added.");
+                        if (age >= 1 && age <= 20) {
+                            database.addPet(name, age);
+                        } else {
+                            System.out.println("Error: Age must be between 1 and 20.");
+                        }
                     } else {
                         System.out.println("Invalid input. Please enter 'name age'.");
                     }
                 }
             } else if (choice == 3) {
-                // Prompt for ID and new information to update a pet
-                database.showPets(); // Display pets for reference
+                database.showPets();
                 System.out.print("Enter the pet ID to update: ");
                 int id = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
+                scanner.nextLine();
                 System.out.print("Enter new name and new age: ");
                 String newName = scanner.next();
                 int newAge = scanner.nextInt();
-                database.updatePet(id, newName, newAge); // Call update method
-                scanner.nextLine(); // Consume newline
+                database.updatePet(id, newName, newAge);
+                scanner.nextLine();
             } else if (choice == 4) {
-                // Prompt for ID to remove a pet
-                database.showPets(); // Display pets for reference
+                database.showPets();
                 System.out.print("Enter the pet ID to remove: ");
                 int id = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
-                database.removePet(id); // Call remove method
+                scanner.nextLine();
+                database.removePet(id);
             } else if (choice == 5) {
                 System.out.print("Enter a name to search: ");
                 String searchName = scanner.nextLine();
@@ -148,9 +200,10 @@ public class PetDatabase {
             } else if (choice == 6) {
                 System.out.print("Enter age to search: ");
                 int searchAge = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
+                scanner.nextLine();
                 database.searchPetsByAge(searchAge);
             } else if (choice == 7) {
+                database.savePetsToFile(); // Save pets before exiting
                 System.out.println("Goodbye!");
                 break;
             } else {
