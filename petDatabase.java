@@ -2,29 +2,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-class Pet {
-    String name;
-    int age;
-
-    public Pet(String name, int age) {
-        this.name = name;
-        this.age = age;
-    }
-
-    @Override
-    public String toString() {
-        return name + " " + age; // For reading pets from the file
-    }
-}
-
-public class PetDatabase {
-    private static final int MAX_PETS = 5;
-    private static final String FILE_NAME = "pets.txt"; // File to save and load pet data
-    private ArrayList<Pet> pets = new ArrayList<>();
-
-    public PetDatabase() {
-        loadPetsFromFile(); // Load pets when program starts
-    }
 
     // Adds a new pet to the database
     public void addPet(String name, int age) {
